@@ -1,0 +1,8 @@
+{
+    "mongoRunner": {
+        "connection": {
+            "url": "mongodb://localhost/versus",
+            "activeOnStartUp": true,
+        }
+    }
+}

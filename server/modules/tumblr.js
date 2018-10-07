@@ -1,9 +1,10 @@
 const tumblr = require('tumblr.js');
 const Promise = require('bluebird');
-const Config = require('../config');
+const Config = require('./config');
 
-const logger = require('./../modules/logger').scope('operators', 'tumblr');
+const logger = require('./logger').scope('operators', 'tumblr');
 
+console.log(Config);
 const Tumblr = tumblr.createClient({
     credentials: {
         consumer_key: Config.tumblr.consumer_key,
@@ -11,8 +12,6 @@ const Tumblr = tumblr.createClient({
     },
     returnPromises: true,
 });
-
-
 
 function getLastPhoto(source = 'madame') {
     var tumblrSource = Config.sources[source].name;
@@ -35,12 +34,28 @@ function getLastPhoto(source = 'madame') {
     });
 }
 
+function getPosts(source = 'madame', type = 'photo', offset = 0) {
+    var tumblrSource = Config.sources[source].name;
+    logger.time('getPosts');
+    logger.start('Getting post', type, offset, source);
+    return new Promise(function(resolve, reject) {
+        return Tumblr.blogPosts(tumblrSource, { type: type, limit: 20, offset: offset })
+            .then(function(res) {
+                resolve(res.posts);
+            })
+            .catch(function(e) {
+                console.log(e);
+                reject(e);
+            })
+    });
+}
+
 function getPhotoCount(source = 'madame') {
     var tumblrSource = Config.sources[source].name;
     logger.time('getPhotoCount');
     logger.start('Counting photos', source);
     return new Promise(function(resolve, reject) {
-        return Tumblr.blogPosts(tumblrSource, { type: 'photo', limit: 1 })
+        return Tumblr.blogPosts(tumblrSource, { type: 'photo', limit: 20 })
             .then(function(res) {
                 logger.complete('Counting photos', source);
                 logger.info('# photos', source, res.total_posts);
@@ -83,4 +98,5 @@ function getRandomPhoto(source = 'madame') {
 module.exports = {
     getLastPhoto,
     getRandomPhoto,
+    getPosts,
 }

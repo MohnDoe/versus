@@ -27,3 +27,25 @@ gulp.task('nodemon', () => {
   });
 });
 
+
+gulp.task('scrape_madames', function() {
+  fs.readFile('.env', 'utf8', function(err, data) {
+      var env = {};
+      var lines = data.split("\n");
+      for (var i = 0; i < lines.length; i++) {
+          var line = lines[i];
+          var equalsLocation = line.indexOf('=');
+          env[line.substr(0, equalsLocation).trim()] = line.substr(equalsLocation + 1).trim();
+      }
+
+      nodemon({
+          script: 'workers/oneoff/scrape_madames.js',
+          ext: 'js',
+          env: env,
+          ignore: ['dist/**/*', 'server/web.js', 'public/*', 'gulpfile.js'],
+          watch: ['server/*', 'workers/*']
+
+      });
+  });
+});
+
