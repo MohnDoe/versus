@@ -39,11 +39,11 @@ gulp.task('scrape_madames', function() {
       }
 
       nodemon({
-          script: 'workers/oneoff/scrape_madames.js',
+          script: 'server/workers/oneoff/scrape_madames.js',
           ext: 'js',
           env: env,
           ignore: ['dist/**/*', 'server/web.js', 'public/*', 'gulpfile.js'],
-          watch: ['server/*', 'workers/*']
+          watch: ['server/*', 'server/workers/*']
 
       });
   });
